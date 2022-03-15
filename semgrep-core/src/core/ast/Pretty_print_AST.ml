@@ -97,6 +97,7 @@ let print_bool env = function
       | Lang.Rust
       | Lang.Scala
       | Lang.Solidity
+      | Lang.Swift
       | Lang.Html
       | Lang.Hcl ->
           "true"
@@ -129,6 +130,7 @@ let print_bool env = function
       | Lang.Rust
       | Lang.Scala
       | Lang.Solidity
+      | Lang.Swift
       | Lang.Html
       | Lang.Hcl ->
           "false"
@@ -254,7 +256,10 @@ and if_stmt env level (tok, e, s, sopt) =
     | Lang.Vue
     | Lang.Kotlin
     | Lang.Rust
-    | Lang.R ->
+    | Lang.R
+    (* Swift does not require parentheses around the condition, but it does
+     * permit them. *)
+    | Lang.Swift ->
         (paren_cond, "else if", bracket_body)
     | Lang.Lua -> (paren_cond, "elseif", bracket_body)
   in
@@ -295,6 +300,7 @@ and while_stmt env level (tok, e, s) =
     | Lang.Yaml
     | Lang.Scala
     | Lang.Solidity
+    | Lang.Swift
     | Lang.Html
     | Lang.Hcl ->
         raise Todo
@@ -333,6 +339,7 @@ and do_while stmt env level (s, e) =
     | Lang.Yaml
     | Lang.Scala
     | Lang.Solidity
+    | Lang.Swift
     | Lang.Html
     | Lang.Hcl ->
         raise Todo
@@ -382,7 +389,8 @@ and for_stmt env level (for_tok, hdr, s) =
     | Lang.Ts
     | Lang.Vue
     | Lang.Rust
-    | Lang.R ->
+    | Lang.R
+    | Lang.Swift ->
         F.sprintf "%s (%s) %s"
     | Lang.Go -> F.sprintf "%s %s %s"
     | Lang.Python
@@ -436,6 +444,7 @@ and def_stmt env (entity, def_kind) =
       | Lang.Yaml
       | Lang.Scala
       | Lang.Solidity
+      | Lang.Swift
       | Lang.Html
       | Lang.Hcl ->
           raise Todo
@@ -519,6 +528,7 @@ and return env (tok, eopt) _sc =
   | Lang.Ocaml
   | Lang.Json
   | Lang.Js
+  | Lang.Swift
   | Lang.Ts
   | Lang.Vue
   | Lang.Lua ->
@@ -563,7 +573,8 @@ and break env (tok, lbl) _sc =
   | Lang.Ts
   | Lang.Vue
   | Lang.Lua
-  | Lang.R ->
+  | Lang.R
+  | Lang.Swift ->
       F.sprintf "%s%s" (token "break" tok) lbl_str
 
 and continue env (tok, lbl) _sc =
@@ -602,6 +613,7 @@ and continue env (tok, lbl) _sc =
   | Lang.Ocaml
   | Lang.Json
   | Lang.Js
+  | Lang.Swift
   | Lang.Ts
   | Lang.Vue ->
       F.sprintf "%s%s" (token "continue" tok) lbl_str
@@ -715,7 +727,8 @@ and literal env l =
       | Lang.Ts
       | Lang.Lua
       | Lang.Rust
-      | Lang.R ->
+      | Lang.R
+      | Lang.Swift ->
           "\"" ^ s ^ "\"")
   | Regexp ((_, (s, _), _), rmod) -> (
       "/" ^ s ^ "/"
